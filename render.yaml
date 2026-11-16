@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: agam-3d-solutions
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: RENDER
+        value: "true"
+      - key: AGAM_SESSION_SECRET
+        generateValue: true

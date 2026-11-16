@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "agam-keychain-maker-v4";
+const CACHE_NAME = "agam-keychain-maker-v5";
 const OFFLINE_FILES = [
   "/keychain-maker.html",
   "/assets/keychain-maker.css",

@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="assets/agam-supabase.js"></script>
   <script src="https://accounts.google.com/gsi/client?hl=en" async defer></script>
   <style>
     :root {
@@ -443,14 +444,14 @@
     <section class="page" id="page-admin" data-page="admin">
       <div class="wrap page-heading"><span class="eyebrow">AGAM STUDIO · ADMIN</span><h1>Manage your <span class="gradient-text">collection.</span></h1><p>Add products, set prices, manage social links and upload the payment QR for your customers.</p></div>
       <div class="wrap admin-grid">
-        <form class="admin-card" id="product-form"><h2 id="product-form-title">Add a product</h2><p>Product images are kept in this browser's local storage.</p>
+        <form class="admin-card" id="product-form"><h2 id="product-form-title">Add a product</h2><p>Products and images are saved to AGAM's shared Supabase catalog.</p>
           <input type="hidden" id="editing-id">
           <div class="field"><label for="admin-product-name">Product name</label><input id="admin-product-name" required placeholder="e.g. Desk Planter"></div>
           <div class="field"><label for="admin-product-price">Price (₹)</label><input id="admin-product-price" type="number" min="1" step="1" required placeholder="599"></div>
           <div class="field"><label for="admin-product-category">Category</label><input id="admin-product-category" required placeholder="Home, Desk, Accessories..."></div>
           <div class="field"><label for="admin-product-description">Description</label><textarea id="admin-product-description" required placeholder="A short description of your product"></textarea></div>
           <div class="field"><label for="admin-product-colors">Customization options (comma-separated)</label><input id="admin-product-colors" placeholder="Matte black, Ocean blue, White"></div>
-          <div class="field"><label for="admin-product-image">Product photo</label><input id="admin-product-image" class="file-input" type="file" accept="image/*"><small class="form-note">Choose an image from this computer. Keep it under 2 MB for browser storage.</small></div>
+          <div class="field"><label for="admin-product-image">Product photo</label><input id="admin-product-image" class="file-input" type="file" accept="image/*"><small class="form-note">Choose an image from this computer. Keep it under 2 MB.</small></div>
           <div class="field"><label for="admin-product-facebook">Facebook link</label><input id="admin-product-facebook" type="url" placeholder="https://facebook.com/..."></div>
           <div class="field"><label for="admin-product-instagram">Instagram link</label><input id="admin-product-instagram" type="url" placeholder="https://instagram.com/..."></div>
           <button class="btn btn-primary" type="submit">Save product</button> <button class="btn hidden" type="button" id="cancel-edit">Cancel edit</button>
@@ -472,14 +473,14 @@
     <div class="modal auth-modal">
       <div class="modal-head"><div class="auth-brand"><img src="assets/agam-logo.png" alt=""><div><strong>AGAM</strong><small>3D SOLUTIONS</small></div></div><button class="icon-button" data-close="login-modal" aria-label="Close sign in">✕</button></div>
       <div class="auth-tabs" role="tablist" aria-label="Account options"><button class="auth-tab active" type="button" role="tab" aria-selected="true" data-auth-mode="signin">Sign in</button><button class="auth-tab" type="button" role="tab" aria-selected="false" data-auth-mode="signup">Sign up</button></div>
-      <div id="google-button"></div><p class="auth-google-note" id="google-auth-note">Continue with Google, or use a demo profile saved in this browser.</p>
+      <div id="google-button"></div><p class="auth-google-note" id="google-auth-note">Sign in with your Supabase account. Google sign-in requires Google to be configured in Supabase.</p>
       <div class="auth-divider">or continue with email</div>
       <form class="auth-form" id="login-form"><h2 id="login-heading">Sign in</h2><p id="login-copy">Welcome back. Sign in to view your orders.</p>
         <div class="field hidden" id="name-field"><label for="login-name">Your name <span id="name-required" class="hidden">*</span></label><input id="login-name" autocomplete="name" placeholder="Your name"></div>
         <div class="field"><label for="login-email">Email address</label><input id="login-email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
-        <div class="field"><label for="login-password">Password</label><input id="login-password" type="password" autocomplete="current-password" required minlength="4" placeholder="At least 4 characters"></div>
+        <div class="field"><label for="login-password">Password</label><input id="login-password" type="password" autocomplete="current-password" required minlength="6" placeholder="At least 6 characters"></div>
         <div class="auth-form-actions"><button class="btn btn-primary" id="login-submit" type="submit">Sign in</button></div>
-        <p class="form-note">Email profiles are browser-only demos. Google accounts use secure sign-in.</p>
+        <p class="form-note">Accounts and sign-in sessions are managed securely by Supabase.</p>
       </form>
     </div>
   </div>
@@ -489,32 +490,20 @@
     const ADMIN_EMAIL = "akileshan2023@gmail.com";
     const GOOGLE_CLIENT_ID = "277482533691-uqgpo8eka7hhgv5usqic3b0f9hllsbmb.apps.googleusercontent.com";
     const BUSINESS_WHATSAPP = "94716889450";
-    const STORE_KEYS = { products: "agam-products-v1", cart: "agam-cart-v1", orders: "agam-orders-v1", profiles: "agam-profiles-v1", user: "agam-user-v1", qr: "agam-payment-qr-v1" };
-    const defaultProducts = [
-      { id:"p-vase", name:"Ripple Vase", category:"Home", price:890, description:"A sculptural little home for your favorite stems.", colors:["Arctic white","Ocean blue","Terracotta"], art:"vase", color:"#2498ff" },
-      { id:"p-lamp", name:"Orbit Desk Light", category:"Desk", price:1490, description:"A soft, modern glow for late-night ideas.", colors:["Midnight","Cloud white","Sunset"], art:"lamp", color:"#ff7918" },
-      { id:"p-planter", name:"Little Leaf Planter", category:"Home", price:650, description:"A cheerful new home for a tiny desk plant.", colors:["Sage","Bone","Coral"], art:"planter", color:"#55d3a0" },
-      { id:"p-gear", name:"Motion Fidget", category:"Accessories", price:390, description:"Pocket-sized gears made to keep curious hands moving.", colors:["Electric blue","Graphite","Orange"], art:"gear", color:"#ffc14f" },
-      { id:"p-stand", name:"Fold Phone Stand", category:"Desk", price:450, description:"A neat, angle-ready place for your everyday screen.", colors:["Space blue","Black","White"], art:"stand", color:"#48bfff" },
-      { id:"p-figure", name:"Mini Maker Figure", category:"Collectibles", price:550, description:"A friendly little desk companion, printed layer by layer.", colors:["Orange","Blue","Surprise me"], art:"figure", color:"#c68aff" }
-    ];
+    const STORE_KEYS = { cart: "agam-cart-v1" };
     const readStore = (key, fallback) => {
       try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; }
       catch (error) { console.error("Could not read saved AGAM data:", error); return fallback; }
     };
-    let products = readStore(STORE_KEYS.products, defaultProducts);
+    let products = [];
+    let productLoadError = "";
     let cart = readStore(STORE_KEYS.cart, []);
-    let orders = readStore(STORE_KEYS.orders, []);
-    let profiles = readStore(STORE_KEYS.profiles, {});
-    profiles = Object.fromEntries(Object.entries(profiles).map(([email, profile]) => [email, { name: profile.name || "", email: profile.email || email }]));
-    let currentUser = readStore(STORE_KEYS.user, null);
-    if (currentUser?.email?.toLowerCase() === ADMIN_EMAIL) {
-      currentUser = null;
-      localStorage.removeItem(STORE_KEYS.user);
-    }
-    let googleAuthenticated = false;
+    let orders = [];
+    let currentUser = null;
+    let supabaseSession = null;
+    let isAdminUser = false;
     let lastPage = "home";
-    let paymentQr = readStore(STORE_KEYS.qr, "");
+    let paymentQr = "";
     let categoryFilter = "All";
     let searchQuery = "";
     let registering = false;
@@ -543,11 +532,13 @@
       <div class="product-buy"><span class="price">${money(product.price)}</span><button class="btn btn-primary btn-small add-cart" data-id="${escapeHtml(product.id)}">Add to bag <span>+</span></button></div>
       <div style="display:flex;gap:12px;margin-top:12px;font-size:10px;color:#99aac0">${product.facebook ? `<a target="_blank" rel="noopener noreferrer" href="${escapeHtml(product.facebook)}">Facebook ↗</a>` : ""}${product.instagram ? `<a target="_blank" rel="noopener noreferrer" href="${escapeHtml(product.instagram)}">Instagram ↗</a>` : ""}</div></div></article>`;
     function renderProducts() {
-      document.getElementById("home-products").innerHTML = products.slice(0, 3).map(productCard).join("") || '<div class="empty-state">Our collection is being prepared. Check back soon.</div>';
+      document.getElementById("home-products").innerHTML = products.slice(0, 3).map(productCard).join() ||
+        `<div class="empty-state">${productLoadError ? escapeHtml(productLoadError) : "Our collection is being prepared. Check back soon."}</div>`;
       const categories = ["All", ...new Set(products.map((product) => product.category).filter(Boolean))];
       document.getElementById("category-tabs").innerHTML = categories.map((category) => `<button class="chip ${category === categoryFilter ? "active" : ""}" data-category="${escapeHtml(category)}">${escapeHtml(category)}</button>`).join("");
       const filtered = products.filter((product) => (categoryFilter === "All" || product.category === categoryFilter) && `${product.name} ${product.category} ${product.description}`.toLowerCase().includes(searchQuery));
-      document.getElementById("all-products").innerHTML = filtered.map(productCard).join("") || '<div class="empty-state" style="grid-column:1/-1">No products match that search yet.</div>';
+      document.getElementById("all-products").innerHTML = filtered.map(productCard).join() ||
+        `<div class="empty-state" style="grid-column:1/-1">${productLoadError ? escapeHtml(productLoadError) : "No products match that search yet."}</div>`;
       renderAdminProducts();
     }
     function renderCart() {
@@ -571,11 +562,11 @@
       const link = document.getElementById("account-link");
       if (!currentUser) { link.href = "#login"; link.textContent = "Sign in"; return; }
       link.href = "#profile";
-      link.textContent = googleAuthenticated && currentUser.email.toLowerCase() === ADMIN_EMAIL ? "Studio" : "My profile";
+      link.textContent = currentUser.email.toLowerCase() === ADMIN_EMAIL ? "Studio" : "My profile";
       document.getElementById("profile-name").textContent = currentUser.name || "AGAM customer";
       document.getElementById("profile-email").textContent = currentUser.email;
       document.getElementById("profile-avatar").textContent = (currentUser.name || currentUser.email).trim().charAt(0).toUpperCase();
-      const isAdmin = googleAuthenticated && currentUser.email.toLowerCase() === ADMIN_EMAIL;
+      const isAdmin = currentUser.email.toLowerCase() === ADMIN_EMAIL;
       document.getElementById("profile-admin-link").classList.toggle("hidden", !isAdmin);
       const myOrders = orders.filter((order) => order.email.toLowerCase() === currentUser.email.toLowerCase());
       document.getElementById("profile-orders").innerHTML = myOrders.length ? myOrders.slice().reverse().map(orderCard).join("") : '<div class="empty-state">You haven’t placed an order yet. Your next favorite print is waiting.</div>';
@@ -634,10 +625,10 @@
         history.replaceState(null, "", "#login");
         showToast("Sign in to continue.");
         showLogin = true;
-      } else if (page === "admin" && (!googleAuthenticated || currentUser.email.toLowerCase() !== ADMIN_EMAIL)) {
+      } else if (page === "admin" && currentUser.email.toLowerCase() !== ADMIN_EMAIL) {
         page = currentUser ? "profile" : lastPage;
         history.replaceState(null, "", currentUser ? "#profile" : "#login");
-        showToast("The studio is available only to the verified admin Google account.");
+        showToast("The studio is available only to the AGAM admin account.");
         showLogin = !currentUser;
       }
       if (showLogin) openModal("login-modal"); else closeModal("login-modal");
@@ -651,10 +642,29 @@
     }
     function openModal(id) { document.getElementById(id).classList.add("open"); }
     function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+    async function applySupabaseSignIn(result) {
+      currentUser = result.user;
+      supabaseSession = result.session;
+      isAdminUser = currentUser.email.toLowerCase() === ADMIN_EMAIL;
+      registering = false;
+      updateLoginForm();
+      let ordersLoaded = true;
+      try {
+        orders = await window.agamSupabase.listOrders();
+      } catch (error) {
+        ordersLoaded = false;
+        orders = [];
+        console.error("Could not load Supabase orders:", error);
+        showToast(`Signed in, but orders could not load: ${error.message}`);
+      }
+      renderProfile();
+      location.hash = isAdminUser ? "admin" : "profile";
+      if (ordersLoaded) showToast(isAdminUser ? "Welcome to your studio." : "Welcome to AGAM.");
+    }
     function initializeGoogleSignIn() {
       const note = document.getElementById("google-auth-note");
       if (location.protocol === "file:") {
-        note.textContent = "Google sign-in needs the site served at http://localhost:8000. Run server.ps1 from the project folder.";
+        note.textContent = "Run the website from http://localhost:8000 to sign in.";
         return;
       }
       if (!window.google?.accounts?.id) {
@@ -665,7 +675,7 @@
       window.google.accounts.id.renderButton(document.getElementById("google-button"), {
         type: "standard", theme: "filled_black", size: "large", text: "continue_with", shape: "rectangular", width: 280, logo_alignment: "left"
       });
-      note.textContent = "Continue with Google to sign in or create an account.";
+      note.textContent = "Google sign-in also requires the Google provider to be enabled in Supabase.";
     }
     async function handleGoogleSignIn(credentialResponse) {
       if (!credentialResponse.credential) {
@@ -673,44 +683,23 @@
         return;
       }
       try {
-        const response = await fetch("/api/auth/google", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ credential: credentialResponse.credential })
-        });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || "Google sign-in could not be verified.");
-        currentUser = { name: result.name, email: result.email };
-        googleAuthenticated = true;
-        profiles[currentUser.email] = { ...currentUser };
-        saveStore(STORE_KEYS.profiles, profiles);
-        saveStore(STORE_KEYS.user, currentUser);
-        renderProfile();
-        registering = false;
-        updateLoginForm();
-        location.hash = result.isAdmin ? "admin" : "profile";
-        showToast(result.isAdmin ? "Welcome to your studio." : "Welcome to AGAM.");
+        await applySupabaseSignIn(await window.agamSupabase.signInWithGoogleToken(credentialResponse.credential));
       } catch (error) {
         console.error("Google sign-in failed:", error);
         showToast(error.message || "Google sign-in failed. Please try again.");
       }
     }
-    async function restoreGoogleSession() {
-      if (location.protocol !== "http:" && location.protocol !== "https:") return;
+    async function restoreSupabaseSession() {
       try {
-        const response = await fetch("/api/session", { credentials: "same-origin", cache: "no-store" });
-        if (!response.ok) throw new Error(`Session check failed (${response.status}).`);
-        const result = await response.json();
-        if (!result.authenticated) return;
-        currentUser = { name: result.name, email: result.email };
-        googleAuthenticated = true;
-        profiles[currentUser.email] = { ...currentUser };
-        saveStore(STORE_KEYS.profiles, profiles);
-        saveStore(STORE_KEYS.user, currentUser);
+        const result = await window.agamSupabase.restoreSession();
+        if (!result) return;
+        currentUser = result.user;
+        supabaseSession = result.session;
+        isAdminUser = currentUser.email.toLowerCase() === ADMIN_EMAIL;
+        orders = await window.agamSupabase.listOrders();
       } catch (error) {
-        console.error("Could not restore Google session:", error);
-        document.getElementById("google-auth-note").textContent = "The sign-in service is temporarily unavailable. Please try again later.";
+        console.error("Could not restore Supabase session:", error);
+        showToast(`Could not restore your sign-in session: ${error.message}`);
       }
     }
     function startCheckout() {
@@ -732,7 +721,7 @@
         <div class="field"><label for="order-phone">Phone number</label><input id="order-phone" type="tel" required placeholder="+91 98765 43210"></div>
         <div class="field"><label for="order-address">Delivery address</label><textarea id="order-address" required placeholder="House, street, city, PIN code"></textarea></div>
         <button class="btn btn-primary" type="submit" style="width:100%">Confirm order & view payment QR →</button></form>
-        <p class="form-note">This is a demo checkout. It records an order in this browser and does not process a payment.</p>`;
+        <p class="form-note">Your order is saved securely to AGAM’s order database. Payment is not processed automatically.</p>`;
       openModal("checkout-modal");
     }
     function showPayment(order) {
@@ -767,16 +756,7 @@
         <button class="btn btn-primary" id="order-done" style="width:100%;margin-top:14px">Done — view my order</button></div>`;
       document.getElementById("order-done").addEventListener("click", () => { closeModal("checkout-modal"); location.hash = "profile"; });
     }
-    function readImageFile(file, callback) {
-      if (!file) { callback(""); return; }
-      if (!file.type.startsWith("image/")) { showToast("Please choose an image file."); return; }
-      if (file.size > 2 * 1024 * 1024) { showToast("That image is over 2 MB. Please choose a smaller one."); return; }
-      const reader = new FileReader();
-      reader.onload = () => callback(String(reader.result));
-      reader.onerror = () => showToast("The image could not be read. Please try another file.");
-      reader.readAsDataURL(file);
-    }
-    document.addEventListener("click", (event) => {
+    document.addEventListener("click", async (event) => {
       const add = event.target.closest(".add-cart");
       if (add) {
         const product = products.find((item) => item.id === add.dataset.id);
@@ -820,9 +800,16 @@
       if (removeProduct) {
         const product = products.find((item) => item.id === removeProduct.dataset.id);
         if (!product || !confirm(`Remove "${product.name}" from the storefront?`)) return;
-        products = products.filter((item) => item.id !== product.id);
-        cart = cart.filter((item) => item.id !== product.id);
-        saveStore(STORE_KEYS.products, products); saveStore(STORE_KEYS.cart, cart); renderProducts(); renderCart(); showToast("Product removed.");
+        try {
+          await window.agamSupabase.deleteProduct(product.id);
+          products = products.filter((item) => item.id !== product.id);
+          cart = cart.filter((item) => item.id !== product.id);
+          saveStore(STORE_KEYS.cart, cart);
+          renderProducts(); renderCart(); showToast("Product removed from the shared storefront.");
+        } catch (error) {
+          console.error("Could not remove product from Supabase:", error);
+          showToast(`Product was not removed: ${error.message}`);
+        }
       }
       const close = event.target.closest("[data-close]");
       if (close) {
@@ -846,43 +833,45 @@
       registering = tab.dataset.authMode === "signup";
       updateLoginForm();
     }));
-    document.getElementById("login-form").addEventListener("submit", (event) => {
+    document.getElementById("login-form").addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (googleAuthenticated) { showToast("Sign out of Google before using a demo profile."); return; }
       const email = document.getElementById("login-email").value.trim().toLowerCase();
       const password = document.getElementById("login-password").value;
       const name = document.getElementById("login-name").value.trim();
-      if (email === ADMIN_EMAIL) { showToast("Admin access requires verified Google sign-in."); return; }
       if (registering && !name) { showToast("Please enter your name."); return; }
-      if (password.length < 4) { showToast("Please use at least 4 characters for the demo password."); return; }
-      const existing = profiles[email];
-      if (registering && existing) { showToast("A profile with this email already exists. Please sign in."); return; }
-      if (!registering && !existing) { showToast("No profile found in this browser. Choose “Create a profile” first."); return; }
-      const profile = { name: registering ? name : (existing?.name || name || email.split("@")[0]), email };
-      profiles[email] = profile;
-      if (!saveStore(STORE_KEYS.profiles, profiles) || !saveStore(STORE_KEYS.user, { name: profile.name, email })) return;
-      currentUser = { name: profile.name, email };
-      registering = false; updateLoginForm(); renderProfile();
-      location.hash = "profile";
-      showToast("Welcome to AGAM.");
-    });
-    document.getElementById("sign-out").addEventListener("click", async () => {
-      if (googleAuthenticated) {
-        try {
-          const response = await fetch("/api/logout", { method: "POST", credentials: "same-origin" });
-          if (!response.ok) throw new Error(`Sign-out failed (${response.status}).`);
-        } catch (error) {
-          console.error("Could not sign out of Google session:", error);
-          showToast("Could not sign out. Please try again.");
+      if (password.length < 6) { showToast("Please use a password with at least 6 characters."); return; }
+      try {
+        const result = registering
+          ? await window.agamSupabase.signUp(email, password, name)
+          : await window.agamSupabase.signIn(email, password);
+        if (result.confirmationRequired) {
+          registering = false;
+          updateLoginForm();
+          showToast("Account created. Check your email to confirm it, then sign in.");
           return;
         }
+        await applySupabaseSignIn(result);
+      } catch (error) {
+        console.error("Supabase email sign-in failed:", error);
+        showToast(error.message || "Sign-in failed. Please try again.");
+      }
+    });
+    document.getElementById("sign-out").addEventListener("click", async () => {
+      let logoutError = null;
+      try {
+        await window.agamSupabase.signOut();
+      } catch (error) {
+        logoutError = error;
+        console.error("Could not revoke the Supabase session:", error);
       }
       currentUser = null;
-      googleAuthenticated = false;
-      localStorage.removeItem(STORE_KEYS.user);
-      renderProfile(); location.hash = "home"; showToast("You’ve signed out.");
+      supabaseSession = null;
+      orders = [];
+      isAdminUser = false;
+      renderProfile(); location.hash = "home";
+      showToast(logoutError ? "Signed out on this device, but Supabase could not revoke the remote session." : "You’ve signed out.");
     });
-    document.getElementById("product-form").addEventListener("submit", (event) => {
+    document.getElementById("product-form").addEventListener("submit", async (event) => {
       event.preventDefault();
       const id = document.getElementById("editing-id").value;
       const existing = products.find((product) => product.id === id);
@@ -911,45 +900,80 @@
         instagram: socialUrl(instagram),
         image: pendingImage
       };
-      products = existing ? products.map((item) => item.id === id ? product : item) : [product, ...products];
-      if (!saveStore(STORE_KEYS.products, products)) return;
-      document.getElementById("product-form").reset();
-      document.getElementById("editing-id").value = ""; pendingImage = "";
-      document.getElementById("product-form-title").textContent = "Add a product";
-      document.getElementById("cancel-edit").classList.add("hidden");
-      renderProducts(); showToast(existing ? "Product updated." : "Product added to your storefront.");
+      try {
+        const imageFile = document.getElementById("admin-product-image").files[0];
+        if (imageFile) product.image = await window.agamSupabase.uploadImage(imageFile, "product-images", "products");
+        const savedProduct = await window.agamSupabase.saveProduct(product);
+        products = existing ? products.map((item) => item.id === id ? savedProduct : item) : [savedProduct, ...products];
+        document.getElementById("product-form").reset();
+        document.getElementById("editing-id").value = ""; pendingImage = "";
+        document.getElementById("product-form-title").textContent = "Add a product";
+        document.getElementById("cancel-edit").classList.add("hidden");
+        renderProducts(); showToast(existing ? "Product updated." : "Product added to the shared storefront.");
+      } catch (error) {
+        console.error("Could not save product to Supabase:", error);
+        showToast(`Product was not saved: ${error.message}`);
+      }
     });
-    document.getElementById("admin-product-image").addEventListener("change", (event) => readImageFile(event.target.files[0], (image) => { if (image) pendingImage = image; }));
     document.getElementById("cancel-edit").addEventListener("click", () => {
       document.getElementById("product-form").reset(); document.getElementById("editing-id").value = ""; pendingImage = "";
       document.getElementById("product-form-title").textContent = "Add a product"; document.getElementById("cancel-edit").classList.add("hidden");
     });
-    document.getElementById("qr-upload").addEventListener("change", (event) => readImageFile(event.target.files[0], (image) => {
-      if (!image) return;
-      if (saveStore(STORE_KEYS.qr, image)) { paymentQr = image; renderQrPreview(); showToast("Payment QR uploaded."); }
-    }));
-    document.getElementById("remove-qr").addEventListener("click", () => {
-      paymentQr = ""; localStorage.removeItem(STORE_KEYS.qr); renderQrPreview(); showToast("Payment QR removed.");
+    document.getElementById("qr-upload").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const url = await window.agamSupabase.uploadImage(file, "payment-qr", "payment");
+        await window.agamSupabase.setPaymentQr(url);
+        paymentQr = url;
+        renderQrPreview();
+        showToast("Payment QR saved for all customers.");
+      } catch (error) {
+        console.error("Could not upload payment QR to Supabase:", error);
+        showToast(`Payment QR was not saved: ${error.message}`);
+      }
     });
-    document.getElementById("checkout-content").addEventListener("submit", (event) => {
+    document.getElementById("remove-qr").addEventListener("click", async () => {
+      try {
+        await window.agamSupabase.removeImage("payment-qr", paymentQr);
+        await window.agamSupabase.setPaymentQr("");
+        paymentQr = "";
+        renderQrPreview();
+        showToast("Payment QR removed.");
+      } catch (error) {
+        console.error("Could not remove payment QR from Supabase:", error);
+        showToast(`Payment QR was not removed: ${error.message}`);
+      }
+    });
+    document.getElementById("checkout-content").addEventListener("submit", async (event) => {
       if (event.target.id !== "order-form") return;
       event.preventDefault();
-      const total = cart.reduce((sum, item) => sum + (products.find((product) => product.id === item.id)?.price || 0) * item.quantity, 0);
-      const order = {
-        id: `order-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        email: currentUser.email, customer: document.getElementById("order-customer").value.trim(),
-        phone: document.getElementById("order-phone").value.trim(), address: document.getElementById("order-address").value.trim(),
-        items: cart.map((item) => {
-          const product = products.find((candidate) => candidate.id === item.id);
-          return { ...item, name: product?.name || "Product", unitPrice: product?.price || 0 };
-        }),
-        total, status: "Payment pending", createdAt: new Date().toISOString()
-      };
-      const updatedOrders = [...orders, order];
-      if (!saveStore(STORE_KEYS.orders, updatedOrders)) return;
-      orders = updatedOrders; cart = [];
-      if (!saveStore(STORE_KEYS.cart, cart)) return;
-      renderCart(); renderProfile(); renderAdminOrders(); showPayment(order);
+      const submit = event.target.querySelector('button[type="submit"]');
+      submit.disabled = true;
+      submit.textContent = "Saving your order…";
+      try {
+        const order = await window.agamSupabase.placeOrder({
+          customer: document.getElementById("order-customer").value.trim(),
+          phone: document.getElementById("order-phone").value.trim(),
+          address: document.getElementById("order-address").value.trim(),
+        }, cart);
+        orders = [order, ...orders];
+        cart = [];
+        saveStore(STORE_KEYS.cart, cart);
+        renderCart(); renderProfile(); renderAdminOrders(); showPayment(order);
+        try {
+          orders = await window.agamSupabase.listOrders();
+          renderProfile(); renderAdminOrders();
+        } catch (error) {
+          console.error("Order was placed, but order history could not be refreshed:", error);
+          showToast(`Order placed, but order history could not be refreshed: ${error.message}`);
+        }
+      } catch (error) {
+        console.error("Could not save order to Supabase:", error);
+        showToast(`Order was not placed: ${error.message}`);
+        submit.disabled = false;
+        submit.textContent = "Confirm order & view payment QR →";
+      }
     });
     document.getElementById("contact-form").addEventListener("submit", (event) => {
       event.preventDefault();
@@ -962,9 +986,26 @@
     window.addEventListener("hashchange", showPage);
     window.addEventListener("load", initializeGoogleSignIn, { once: true });
     document.getElementById("year").textContent = new Date().getFullYear();
-    if (!localStorage.getItem(STORE_KEYS.products)) saveStore(STORE_KEYS.products, defaultProducts);
     renderProducts(); renderCart(); renderProfile(); updateLoginForm(); renderQrPreview();
-    restoreGoogleSession().then(() => { renderProfile(); showPage(); });
+    async function initializeSupabaseData() {
+      try {
+        products = await window.agamSupabase.listProducts();
+      } catch (error) {
+        productLoadError = "The shared product catalog could not be loaded. Please try again later.";
+        console.error("Could not load products from Supabase:", error);
+        showToast(`Product catalog unavailable: ${error.message}`);
+      }
+      try {
+        paymentQr = await window.agamSupabase.getPaymentQr();
+      } catch (error) {
+        console.error("Could not load payment settings from Supabase:", error);
+        showToast(`Payment QR could not be loaded: ${error.message}`);
+      }
+      await restoreSupabaseSession();
+      renderProducts(); renderCart(); renderProfile(); renderAdminOrders(); renderQrPreview();
+      showPage();
+    }
+    initializeSupabaseData();
   </script>
 </body>
 </html>
