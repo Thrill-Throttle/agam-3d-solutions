@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090d14">
+  <meta name="description" content="Design a personalized 3D-printed keychain and download its STL, right in your browser.">
+  <title>Custom Keychain Maker — AGAM 3D Solutions</title>
+  <link rel="icon" href="./assets/agam-logo.png" type="image/png">
+  <link rel="stylesheet" href="./assets/keychain-maker.css">
+  <script src="./assets/keychain-maker.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner wrap">
+      <a class="brand" href="./index.html#home" aria-label="AGAM 3D Solutions home">
+        <img src="./assets/agam-logo.png" alt="">
+        <span class="brand-name">AGAM <small>3D SOLUTIONS</small></span>
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+        <a href="./index.html#home">Home</a>
+        <a href="./index.html#about">About</a>
+        <a href="./index.html#products">Products</a>
+        <a href="./keychain-maker.html" aria-current="page">Keychain Maker</a>
+        <a href="./index.html#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <a class="header-button bag-button" href="./index.html#cart" aria-label="Open shopping bag">Bag</a>
+        <a class="header-button sign-in-button" href="./index.html#login">Sign in</a>
+        <a class="header-button mobile-design" href="#maker">Design</a>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation menu"><span aria-hidden="true">☰</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro wrap">
+      <p class="eyebrow"><span class="eyebrow-dot"></span> MADE FOR YOUR KEYS</p>
+      <h1>A little piece of <span>you.</span></h1>
+      <p class="intro-copy">Make a personalized keychain in seconds. Preview it, spin it around, and download a print-ready file—without sending anything anywhere.</p>
+    </section>
+
+    <section class="maker wrap" id="maker" aria-label="Keychain maker">
+      <div class="preview-column">
+        <div class="section-top">
+          <div><p class="eyebrow">YOUR LIVE PREVIEW</p><h2>See it take shape.</h2></div>
+          <button class="view-button" id="reset-view" type="button" aria-label="Reset preview rotation" title="Reset view">⟲ <span>Reset view</span></button>
+        </div>
+        <div class="preview-card">
+          <div class="preview-toolbar"><span class="live-indicator">LIVE PREVIEW</span><span class="drag-hint">Drag to rotate</span></div>
+          <canvas id="preview" aria-label="Interactive 3D preview of your personalized keychain" role="img"></canvas>
+          <div class="preview-legend"><span><i class="swatch blue-swatch"></i>Blue body</span><span><i class="swatch dark-swatch"></i>Raised lettering</span></div>
+        </div>
+        <div class="dimensions" aria-label="Keychain dimensions">
+          <div><span>BODY</span><strong>75 <small>×</small> 20 <small>mm</small></strong></div>
+          <div><span>BASE</span><strong>3.0 <small>mm</small></strong></div>
+          <div><span>WITH TEXT</span><strong>4.2 <small>mm</small></strong></div>
+          <div><span>RING HOLE</span><strong>Ø 5 <small>mm</small></strong></div>
+        </div>
+        <p class="preview-note">Color and the dark edge are visual guides only. Your STL contains geometry, not color.</p>
+      </div>
+
+      <aside class="settings-card" aria-labelledby="settings-title">
+        <div class="settings-heading"><span class="settings-icon" aria-hidden="true">✳</span><div><p class="eyebrow">MAKE IT YOURS</p><h2 id="settings-title">Your keychain</h2></div></div>
+        <label class="field-label" for="keychain-text">Keychain Text <span>LETTERS, NUMBERS, SPACES &amp; HYPHENS</span></label>
+        <input id="keychain-text" name="keychainText" type="text" value="MAKER 42" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="text-help validation-message">
+        <div class="field-meta"><span id="text-help">Up to 32 characters</span><span id="char-count" aria-live="polite">8 / 32</span></div>
+        <p class="validation-message" id="validation-message" role="status" aria-live="polite"></p>
+
+        <div class="spec-list" aria-label="Design details">
+          <div><span>Body</span><strong>75 × 20 mm</strong></div>
+          <div><span>Base / raised text</span><strong>3.0 / 1.2 mm</strong></div>
+          <div><span>Text safe area</span><strong>58 mm wide</strong></div>
+          <div><span>Minimum text detail</span><strong>0.8 mm</strong></div>
+          <div><span>Keyring hole</span><strong>5 mm through-hole</strong></div>
+        </div>
+
+        <button class="download-button" id="download-stl" type="button">
+          <span class="download-icon" aria-hidden="true">↓</span><span id="download-label">Download STL</span>
+        </button>
+        <p class="local-note"><span aria-hidden="true">◉</span> Made on your device. Your text never leaves this browser.</p>
+        <div class="print-tip"><span class="tip-icon" aria-hidden="true">✦</span><div><strong>Two-colour print tip</strong><p>Start with blue filament, then add a colour change to black at the first layer containing only the raised lettering. Use your slicer’s layer preview to find that layer. The STL contains geometry only—not color information.</p></div></div>
+      </aside>
+    </section>
+
+    <section class="bottom-cta wrap">
+      <div><p class="eyebrow">READY TO MAKE IT REAL?</p><h2>Your words. Your keychain.</h2><p>Make another design, or explore more custom prints from AGAM.</p></div>
+      <a class="button-secondary" href="./index.html#products">Explore AGAM designs <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a href="./index.html#home">AGAM <span>3D SOLUTIONS</span></a>
+    <p>Made with care in Moratuwa, Sri Lanka.</p>
+    <span>© <span id="year"></span> AGAM 3D Solutions</span>
+  </footer>
+</body>
+</html>
